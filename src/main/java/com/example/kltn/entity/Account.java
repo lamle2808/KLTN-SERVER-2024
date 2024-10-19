@@ -21,4 +21,6 @@ public class Account {
     private String passWord;
     private String userRole;
     private String image;
+    private boolean isVerified;
+    private boolean enable;
 }
