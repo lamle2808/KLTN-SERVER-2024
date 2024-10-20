@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,12 +39,13 @@ public class Account implements UserDetails {
     private String phoneNumber;
     private String passWordAccount;
     private String image;
-    private boolean isVerified;
-    private boolean enable;
+    private int isVerified;
+    private int enable;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_account_roles", joinColumns = @JoinColumn(name = "account_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles = new LinkedHashSet<>();
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<Role> rolesCopy = new HashSet<>(roles);
@@ -56,13 +59,39 @@ public class Account implements UserDetails {
         return list;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return passWordAccount;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return userName;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
