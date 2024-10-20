@@ -8,6 +8,7 @@ import com.example.kltn.dataBean.CustomerDataBean;
 import com.example.kltn.entity.Account;
 import com.example.kltn.entity.Customer;
 import com.example.kltn.entity.Role;
+import com.example.kltn.entity.VerificationToken;
 
 public interface AccountService {
     Optional<Account> getByEmail(String email);
@@ -35,4 +36,8 @@ public interface AccountService {
     Account removeRoleFromAccount(Account account, Role role);
 
     Account addRoleToAccount(Account account, Role role);
+
+    public VerificationToken createVerificationToken(Account account);
+
+    public boolean verifyAccount(String token);
 }
