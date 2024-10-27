@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Service {
+public class ServiceEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

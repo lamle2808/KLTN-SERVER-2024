@@ -24,8 +24,8 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-     @ManyToMany(mappedBy = "locations", cascade = CascadeType.ALL)
-    private Set<Service> services = new HashSet<>();
+    @ManyToMany(mappedBy = "locations", cascade = CascadeType.ALL)
+    private Set<ServiceEvent> services = new HashSet<>();
     private String venueName;
     private String location;
     private String capacity;
