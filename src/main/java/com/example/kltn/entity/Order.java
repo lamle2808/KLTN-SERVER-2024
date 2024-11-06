@@ -1,10 +1,11 @@
 package com.example.kltn.entity;
 
-import java.util.Date;
+import java.io.Serializable;
 import java.util.*;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,13 +22,11 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order {
+public class Order implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    private Event event;
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -37,4 +36,11 @@ public class Order {
     private List<Payment> payments = new ArrayList<>();
     private Date orderDate;
     private String status;
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CancelRequest cancelRequest;
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Event event;
 }

@@ -14,7 +14,7 @@ public interface ServiceRepo extends JpaRepository<ServiceEvent, Long> {
 
     ServiceEvent findServiceEventById(Long id);
 
-    @Query("SELECT u FROM ServiceEvent u WHERE u.name LIKE CONCAT(:name, '%')")
-    List<ServiceEvent> findServiceEventByname(@Param("name") String name);
+    @Query("SELECT u FROM ServiceEvent u WHERE u.servicename LIKE CONCAT(:name, '%')")
+    List<ServiceEvent> findServiceEventByServiceName(@Param("name") String name);
 
 }

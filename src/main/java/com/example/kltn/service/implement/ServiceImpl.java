@@ -43,7 +43,7 @@ public class ServiceImpl implements Service{
 
     @Override
     public List<ServiceEvent> getByName(String name) {
-        return serviceRepo.findServiceEventByname(name);
+        return serviceRepo.findServiceEventByServiceName(name);
     }
 
 }

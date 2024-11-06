@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
@@ -20,7 +21,7 @@ import java.util.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment {
+public class Payment implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +32,5 @@ public class Payment {
     private Date paymentDate;
     private String paymentMethod;
     private String paymentSatus;
+
 }

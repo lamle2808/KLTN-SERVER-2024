@@ -1,28 +1,25 @@
 package com.example.kltn.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "servicecategorys")
+@MappedSuperclass
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ServiceCategory implements Serializable{
-
+public abstract class Image implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-
+    private String idCloud;
+    private String imageLink;
+    private Date date;
+    private String type;
+    private String size;
 }
