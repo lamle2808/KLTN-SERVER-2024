@@ -1,5 +1,8 @@
 package com.example.kltn.entity;
 
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,15 +21,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetail {
+public class OrderDetail implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int quntilty;
-    private double totalAmount;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private ServiceEvent serviceEvent;
 }

@@ -26,8 +26,8 @@ public class SecurityConfiguration {
                                                 .disable())
                                 .authorizeHttpRequests(requests -> requests
                                                 .requestMatchers("/KLTN-2024/api/v1/**")
-                                                .permitAll() // Permit tất cả các yêu cầu với /KLTN-2024/api/v1/**
-                                                .requestMatchers("/KLTN-2024/api/v1/auth/**") // Permit cho đường dẫn auth                                                                                              // auth
+                                                .permitAll()
+                                                .requestMatchers("/KLTN-2024/api/v1/auth/**")
                                                 .permitAll()
                                                 .requestMatchers("/KLTN-2024/api/manage/admin/**")
                                                 .hasRole("ADMIN")

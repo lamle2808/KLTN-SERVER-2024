@@ -1,5 +1,6 @@
 package com.example.kltn.entity;
 
+import java.io.Serializable;
 import java.util.*;
 
 import jakarta.persistence.CascadeType;
@@ -11,18 +12,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Entity
 @Table(name = "services")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Service {
+public class ServiceEvent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,13 +35,11 @@ public class Service {
     @JoinColumn(name = "serviceCategory_id")
     private ServiceCategory serviceCategory;
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "location_service",
-        joinColumns = @JoinColumn(name = "service_id"),
-        inverseJoinColumns = @JoinColumn(name = "location_id")
-    )
+    @JoinTable(name = "location_service", joinColumns = @JoinColumn(name = "service_id"), inverseJoinColumns = @JoinColumn(name = "location_id"))
     private Set<Location> locations = new HashSet<>();
     private String servicename;
     private String description;
     private double price;
+    @OneToMany(mappedBy = "serviceEvent")
+    private List<ImageService> imageService;
 }
