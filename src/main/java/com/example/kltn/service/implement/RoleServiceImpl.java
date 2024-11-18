@@ -32,13 +32,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> getByName(String name) {
-        return roleRepo.findRoleByNameContaining(name);
+    public Role getById(Long id) {
+        return roleRepo.findById(id).orElse(null);
     }
 
     @Override
-    public Role getById(Long id) {
-        return roleRepo.findRoleById(id);
+    public void deleteRole(Long id) {
+        roleRepo.deleteById(id);
     }
 
 }

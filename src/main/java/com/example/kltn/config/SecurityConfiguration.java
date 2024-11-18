@@ -16,47 +16,40 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfiguration {
-        private final JwtAuthenticationFilter jwtAuthenticationFilter;
-        private final AuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-                httpSecurity
-                                .csrf(csrf -> csrf
-                                                .disable())
-                                .authorizeHttpRequests(requests -> requests
-                                                .requestMatchers("/KLTN-2024/api/v1/**")
-                                                .permitAll()
-                                                .requestMatchers("/KLTN-2024/api/v1/auth/**")
-                                                .permitAll()
-                                                .requestMatchers("/KLTN-2024/api/manage/admin/**")
-                                                .hasRole("ADMIN")
-                                                .requestMatchers(AUTH_WHITELIST)
-                                                .permitAll()
-                                                .anyRequest()
-                                                .authenticated())
-                                .sessionManagement(management -> management
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .exceptionHandling(withDefaults())
-                                .authenticationProvider(authenticationProvider)
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(requests -> requests
+                .requestMatchers("/api/v1/events/**").hasRole("USER")
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/manage/admin/**").hasRole("ADMIN")
+                .requestMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated())
+            .sessionManagement(management -> management
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(withDefaults())
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                return httpSecurity.build();
-        }
+        return httpSecurity.build();
+    }
 
-        private static final String[] AUTH_WHITELIST = {
-                        "/api/v1/**",
-                        "/v2/api-docs",
-                        "/v3/api-docs",
-                        "v3/api-docs/**",
-                        "api-docs.yaml",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/webjars/**"
-        };
-
+    private static final String[] AUTH_WHITELIST = {
+        "/api/v1/**",
+        "/v2/api-docs",
+        "/v3/api-docs",
+        "v3/api-docs/**",
+        "api-docs.yaml",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/configuration/ui",
+        "/configuration/security",
+        "/webjars/**"
+    };
 }

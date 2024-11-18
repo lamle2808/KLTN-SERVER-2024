@@ -9,7 +9,7 @@ public interface RoleService {
 
     List<Role> getAll();
 
-    List<Role> getByName(String name);
-
     Role getById(Long id);
+
+    void deleteRole(Long id);
 }
