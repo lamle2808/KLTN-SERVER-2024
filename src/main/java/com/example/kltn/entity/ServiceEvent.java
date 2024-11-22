@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "services")
@@ -34,12 +35,20 @@ public class ServiceEvent implements Serializable {
     @ManyToOne
     @JoinColumn(name = "serviceCategory_id")
     private ServiceCategory serviceCategory;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "location_service", joinColumns = @JoinColumn(name = "service_id"), inverseJoinColumns = @JoinColumn(name = "location_id"))
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "location_service", 
+        joinColumns = @JoinColumn(name = "service_id"),
+        inverseJoinColumns = @JoinColumn(name = "location_id")
+    )
+    @JsonIgnoreProperties("services")
     private Set<Location> locations = new HashSet<>();
+
     private String servicename;
     private String description;
     private double price;
+
     @OneToMany(mappedBy = "serviceEvent")
     private List<ImageService> imageService;
 }
