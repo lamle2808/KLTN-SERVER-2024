@@ -12,8 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "payments")
@@ -21,16 +20,22 @@ import java.util.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment implements Serializable{
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
     private Date paymentDate;
     private String paymentMethod;
-    private String paymentSatus;
+    private String paymentStatus;
+    private double amount;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }
