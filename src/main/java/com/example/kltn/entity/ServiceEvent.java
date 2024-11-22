@@ -34,11 +34,12 @@ public class ServiceEvent implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "serviceCategory_id")
+    @JsonIgnoreProperties("services")
     private ServiceCategory serviceCategory;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
-        name = "location_service", 
+        name = "location_service",
         joinColumns = @JoinColumn(name = "service_id"),
         inverseJoinColumns = @JoinColumn(name = "location_id")
     )
@@ -50,5 +51,6 @@ public class ServiceEvent implements Serializable {
     private double price;
 
     @OneToMany(mappedBy = "serviceEvent")
+    @JsonIgnoreProperties("serviceEvent")
     private List<ImageService> imageService;
 }

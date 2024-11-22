@@ -16,6 +16,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table(name = "locations")
@@ -27,20 +32,44 @@ public class Location implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    private String title;
+    private String img;
+    
+    @ElementCollection
+    @CollectionTable(name = "location_images", 
+        joinColumns = @JoinColumn(name = "location_id"))
+    @Column(name = "image_url")
+    private List<String> images = new ArrayList<>();
+    
+    private String address;
+    private Double latitude;
+    private Double longitude;
+    private Integer capacity;
+    private Double price;
+    private Double rating;
+    private Integer size;
+    private String description;
+    
+    @ElementCollection
+    @CollectionTable(name = "location_features", 
+        joinColumns = @JoinColumn(name = "location_id"))
+    @Column(name = "feature")
+    private List<String> features = new ArrayList<>();
+    
+    @ElementCollection
+    @CollectionTable(name = "location_event_types", 
+        joinColumns = @JoinColumn(name = "location_id"))
+    @Column(name = "event_type")
+    private List<String> eventTypes = new ArrayList<>();
+    
+    private String placeType;
+    
     @ManyToMany(mappedBy = "locations")
     @JsonIgnoreProperties("locations")
     private Set<ServiceEvent> services = new HashSet<>();
-    private String venueName;
-    private String location;
-    private Double latitude;
-    private Double longitude;
-    private String capacity;
-    private double price;
-    private String image;
-    private String address;
-    private String description;
-    private String status;
-    @OneToMany(mappedBy = "location")
-    @JsonIgnoreProperties("location")
-    private List<ImageLocation> imageLocation;
+    
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Account author;
 }
