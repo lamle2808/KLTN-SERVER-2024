@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "locations")
@@ -26,7 +27,8 @@ public class Location implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToMany(mappedBy = "locations", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "locations")
+    @JsonIgnoreProperties("locations")
     private Set<ServiceEvent> services = new HashSet<>();
     private String venueName;
     private String location;
@@ -39,5 +41,6 @@ public class Location implements Serializable{
     private String description;
     private String status;
     @OneToMany(mappedBy = "location")
+    @JsonIgnoreProperties("location")
     private List<ImageLocation> imageLocation;
 }

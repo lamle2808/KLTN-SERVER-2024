@@ -1,44 +1,44 @@
-package com.example.kltn.config;
+// package com.example.kltn.config;
 
-import java.io.IOException;
+// import java.io.IOException;
+// import org.springframework.core.Ordered;
+// import org.springframework.core.annotation.Order;
+// import org.springframework.stereotype.Component;
+// import jakarta.servlet.Filter;
+// import jakarta.servlet.FilterChain;
+// import jakarta.servlet.FilterConfig;
+// import jakarta.servlet.ServletException;
+// import jakarta.servlet.ServletRequest;
+// import jakarta.servlet.ServletResponse;
+// import jakarta.servlet.http.HttpServletRequest;
+// import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.context.annotation.Configuration;
+// @Component
+// @Order(Ordered.HIGHEST_PRECEDENCE)
+// public class CORSFilter implements Filter {
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+//     @Override
+//     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+//             throws IOException, ServletException {
+//         HttpServletResponse response = (HttpServletResponse) res;
+//         HttpServletRequest request = (HttpServletRequest) req;
 
-@Configuration
-public class CORSFilter implements Filter {
+//         response.setHeader("Access-Control-Allow-Origin", "*");
+//         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+//         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
+//         response.setHeader("Access-Control-Max-Age", "3600");
+//         response.setHeader("Access-Control-Allow-Credentials", "true");
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
-    }
+//         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+//             response.setStatus(HttpServletResponse.SC_OK);
+//         } else {
+//             chain.doFilter(req, res);
+//         }
+//     }
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+//     @Override
+//     public void init(FilterConfig filterConfig) {}
 
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
-
-        chain.doFilter(req, res);
-    }
-
-    @Override
-    public void destroy() {
-        Filter.super.destroy();
-    }
-
-}
+//     @Override
+//     public void destroy() {}
+// }

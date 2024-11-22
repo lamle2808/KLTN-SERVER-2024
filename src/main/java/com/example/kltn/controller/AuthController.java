@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.kltn.dataBean.LoginResponse;
 import com.example.kltn.entity.Account;
 import com.example.kltn.entity.VerificationToken;
 import com.example.kltn.service.AccountService;
@@ -73,18 +74,13 @@ public class AuthController {
             }
             Account accountLogin = accountService.getByEmail2(account.getEmail());
             if (accountLogin.getEnable() == 0 || accountLogin.getIsVerified() == 0) {
-                return ResponseEntity.badRequest().body("account is not acctive !!");
+                return ResponseEntity.badRequest().body("account is not active !!");
             }
-            // Customer customer = customerService.getByEmail(account.getEmail());
-            // if (customer != null) {
-            // CustomerDataBean customerDataBean = accountService.customerLogin(token,
-            // customer);
-            // return ResponseEntity.ok().body(customerDataBean);
-            // }
-            // Employee employee = employeeService.getByEmail(account.getEmail());
-            // EmployeeDataBean employeeDataBean = accountService.employeeLogin(token,
-            // employee);
-            return ResponseEntity.ok().body(token);
+            
+            // Tạo response object với thông tin cần thiết
+            LoginResponse loginResponse = LoginResponse.fromAccount(token, accountLogin);
+            return ResponseEntity.ok().body(loginResponse);
+            
         } catch (Exception exception) {
             return ResponseEntity.badRequest().body("There is an exception when execute!! --> " + exception);
         }
