@@ -30,6 +30,8 @@ public class Location implements Serializable{
     private Set<ServiceEvent> services = new HashSet<>();
     private String venueName;
     private String location;
+    private Double latitude;
+    private Double longitude;
     private String capacity;
     private double price;
     private String image;
