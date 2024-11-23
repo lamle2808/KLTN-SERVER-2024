@@ -1,48 +1,40 @@
 package com.example.kltn.controller;
 
-import com.example.kltn.entity.Event;
-import com.example.kltn.service.EventService;
+import com.example.kltn.entity.ImageEvent;
+import com.example.kltn.service.CloudinaryService;
+import com.example.kltn.service.ImageEventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/events")
+@RequestMapping("/api/events")
 @RequiredArgsConstructor
 public class EventController {
 
-    private final EventService eventService;
-
-    @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventService.getAll();
-        return ResponseEntity.ok(events);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        Event event = eventService.getById(id);
-        return ResponseEntity.ok(event);
-    }
-
-    @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        Event createdEvent = eventService.saveOrUpdate(event);
-        return ResponseEntity.ok(createdEvent);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        event.setId(id);
-        Event updatedEvent = eventService.saveOrUpdate(event);
-        return ResponseEntity.ok(updatedEvent);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
-        return ResponseEntity.noContent().build();
+    private final CloudinaryService cloudinaryService;
+    private final ImageEventService imageEventService;
+    
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadEventImage(@RequestParam("file") MultipartFile file) {
+        try {
+            Map result = cloudinaryService.upload(file);
+            ImageEvent imageEvent = new ImageEvent();
+            imageEvent.setImageLink((String) result.get("url"));
+            imageEvent.setIdCloud((String) result.get("public_id"));
+            // ... set các field khác
+            return ResponseEntity.ok().body(imageEventService.save(imageEvent));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
+        }
     }
 } 

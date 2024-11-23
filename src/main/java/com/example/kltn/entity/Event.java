@@ -55,4 +55,7 @@ public class Event implements Serializable {
     private Employee employee;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location eventLocation;
 }

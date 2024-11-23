@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "imageLocation")
+@Table(name = "image_locations")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageLocation extends Image{
+public class ImageLocation extends Image {
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;

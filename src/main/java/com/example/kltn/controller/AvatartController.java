@@ -1,6 +1,7 @@
 package com.example.kltn.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,14 +25,14 @@ public class AvatartController {
     private final AvatarService avatarService;
     private final CloudinaryService cloudinaryService;
 
-    @PostMapping("/saveOrUpdate")
-    public ResponseEntity<?> saveOrUpdate(@RequestBody MultipartFile multipartFile) throws IOException {
+    @PostMapping(value = "/saveOrUpdate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveOrUpdate(@RequestParam("file") MultipartFile file) {
         try {
-            BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
+            BufferedImage bi = ImageIO.read(file.getInputStream());
             if (bi == null) {
                 return ResponseEntity.badRequest().body("Error !!");
             }
-            Map result = cloudinaryService.upload(multipartFile);
+            Map result = cloudinaryService.upload(file);
             Avatar avatar = new Avatar();
             avatar.setImageLink((String) result.get("url"));
             avatar.setName((String) result.get("original_filename"));
@@ -50,7 +51,6 @@ public class AvatartController {
         } catch (Exception exception) {
             return ResponseEntity.badRequest().body("There is an exception when execute !! --> " + exception);
         }
-
     }
 
     @DeleteMapping("/delete/{id}")

@@ -72,4 +72,10 @@ public class Location implements Serializable{
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Account author;
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+    private List<ImageLocation> imageLocations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "eventLocation", cascade = CascadeType.ALL)
+    private List<Event> events = new ArrayList<>();
 }
