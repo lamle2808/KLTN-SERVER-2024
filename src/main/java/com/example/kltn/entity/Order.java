@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 
 @Entity
@@ -30,17 +32,19 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetails = new ArrayList<>();
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
-    private Date orderDate;
-    private String status;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date orderDate = new Date();
+    private String status = "PENDING";
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CancelRequest cancelRequest;
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    private Employee employee;
+    private Employee assignedEmployee;
     @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "event_id")
     private Event event;
 }
