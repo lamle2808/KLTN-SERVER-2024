@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepo extends JpaRepository<Order, Long> {
-    // Bạn có thể thêm các phương thức tùy chỉnh ở đây nếu cần
-} 
+}

@@ -21,15 +21,14 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/avatars")
-public class AvatartController {
+public class AvatarController {
     private final AvatarService avatarService;
     private final CloudinaryService cloudinaryService;
 
-    @PostMapping(value = "/saveOrUpdate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveOrUpdate(@RequestParam("file") MultipartFile file) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
         try {
-            BufferedImage bi = ImageIO.read(file.getInputStream());
-            if (bi == null) {
+            if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Error !!");
             }
             Map result = cloudinaryService.upload(file);
@@ -37,37 +36,21 @@ public class AvatartController {
             avatar.setImageLink((String) result.get("url"));
             avatar.setName((String) result.get("original_filename"));
             avatar.setIdCloud((String) result.get("public_id"));
-            // Sử dụng DateTimeFormatter để chuyển đổi chuỗi thành đối tượng Instant
+            
             DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
             Instant instant = Instant.from(formatter.parse((String) result.get("created_at")));
             Date date = Date.from(instant);
             avatar.setDate(date);
+            
             avatar.setType((String) result.get("format"));
             int bytes = (int) result.get("bytes");
             double size = (double) bytes / 1024;
             String sizeFormat = String.format("%.3f", size);
             avatar.setSize(sizeFormat + "KB");
+            
             return ResponseEntity.ok().body(avatarService.addAvatar(avatar));
         } catch (Exception exception) {
-            return ResponseEntity.badRequest().body("There is an exception when execute !! --> " + exception);
+            return ResponseEntity.badRequest().body("Upload failed: " + exception.getMessage());
         }
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException {
-        try {
-            if (!avatarService.check(id)) {
-                return ResponseEntity.badRequest().body("ImageProduct not found !!");
-            }
-            Avatar avatar = avatarService.getById(id);
-            if (!avatar.getIdCloud().equals("default")) {
-                Map result = cloudinaryService.delete(avatar.getIdCloud());
-                return ResponseEntity.ok().body(result);
-            }
-            return ResponseEntity.ok().body(avatarService.remove(id));
-        } catch (Exception exception) {
-            return ResponseEntity.badRequest().body("There is an exception when execute !! --> " + exception);
-        }
-
     }
 }

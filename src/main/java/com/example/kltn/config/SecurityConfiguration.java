@@ -33,6 +33,12 @@ public class SecurityConfiguration {
         "/api/v1/locations",
         "/api/v1/locations/**",
         "/api/v1/services/**",
+        "/api/events/**",
+        "/api/events/*/upload-event-image",
+        "/api/v1/payments/**",
+        "/api/v1/avatars/**",
+        "/api/v1/avatars/upload",
+        "/api/v1/avatars/*/upload-image",
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html"

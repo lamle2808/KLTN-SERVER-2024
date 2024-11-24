@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Slf4j
 @SessionScope
-public class AccountServiceimpl implements AccountService {
+public class AccountServiceImpl implements AccountService {
     private final AccountRepo accountRepo;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;

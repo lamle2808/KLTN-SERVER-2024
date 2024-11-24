@@ -5,11 +5,13 @@ import com.example.kltn.repository.ServiceRepo;
 import com.example.kltn.service.ServiceEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ServiceEventServiceImpl implements ServiceEventService {
 
     private final ServiceRepo serviceRepo;

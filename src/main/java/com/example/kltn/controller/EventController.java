@@ -1,9 +1,16 @@
 package com.example.kltn.controller;
 
 import com.example.kltn.entity.ImageEvent;
+import com.example.kltn.entity.ServiceEvent;
+import com.example.kltn.entity.ImageService;
+import com.example.kltn.entity.Event;
 import com.example.kltn.service.CloudinaryService;
 import com.example.kltn.service.ImageEventService;
+import com.example.kltn.service.ServiceEventService;
+import com.example.kltn.service.ImageServiceEventService;
+import com.example.kltn.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +25,91 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/events")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EventController {
 
     private final CloudinaryService cloudinaryService;
     private final ImageEventService imageEventService;
+    private final ServiceEventService serviceEventService;
+    private final ImageServiceEventService imageServiceEventService;
+    private final EventService eventService;
     
-    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadEventImage(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload-event-image/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadEventImage(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable Long eventId) {
         try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "File không được để trống"));
+            }
+
             Map result = cloudinaryService.upload(file);
             ImageEvent imageEvent = new ImageEvent();
             imageEvent.setImageLink((String) result.get("url"));
             imageEvent.setIdCloud((String) result.get("public_id"));
-            // ... set các field khác
+            
+            Event event = eventService.getById(eventId);
+            if (event == null) {
+                return ResponseEntity.badRequest().body("Event không tồn tại");
+            }
+            imageEvent.setEvent(event);
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+            Instant instant = Instant.from(formatter.parse((String) result.get("created_at")));
+            imageEvent.setDate(Date.from(instant));
+            imageEvent.setType((String) result.get("format"));
+            
+            int bytes = (int) result.get("bytes");
+            double size = (double) bytes / 1024;
+            String sizeFormat = String.format("%.3f", size);
+            imageEvent.setSize(sizeFormat);
+            
             return ResponseEntity.ok().body(imageEventService.save(imageEvent));
+            
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/upload-service-image/{serviceId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadServiceImage(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable Long serviceId) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "File không được để trống"));
+            }
+
+            Map result = cloudinaryService.upload(file);
+            ImageService imageService = new ImageService();
+            imageService.setImageLink((String) result.get("url"));
+            imageService.setIdCloud((String) result.get("public_id"));
+            
+            ServiceEvent service = serviceEventService.getById(serviceId);
+            if (service == null) {
+                return ResponseEntity.badRequest().body("Service không tồn tại");
+            }
+            imageService.setServiceEvent(service);
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+            Instant instant = Instant.from(formatter.parse((String) result.get("created_at")));
+            imageService.setDate(Date.from(instant));
+            imageService.setType((String) result.get("format"));
+            
+            int bytes = (int) result.get("bytes");
+            double size = (double) bytes / 1024;
+            String sizeFormat = String.format("%.3f", size);
+            imageService.setSize(sizeFormat);
+            
+            return ResponseEntity.ok().body(imageServiceEventService.save(imageService));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
         }
     }
 } 

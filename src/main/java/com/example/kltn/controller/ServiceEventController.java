@@ -10,8 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/services")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class ServiceController {
+public class ServiceEventController {
 
     private final ServiceEventService serviceEventService;
 
