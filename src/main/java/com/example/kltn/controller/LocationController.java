@@ -18,10 +18,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.io.IOException;
+import java.util.HashMap;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/locations")
 @RequiredArgsConstructor
+@Slf4j
 public class LocationController {
 
     private final LocationService locationService;
@@ -59,38 +63,37 @@ public class LocationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadLocationImage(@RequestParam("file") MultipartFile file) {
+    @PostMapping(
+        value = "/{locationId}/upload-image",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<Map<String, Object>> uploadImage(
+        @PathVariable Long locationId,
+        @RequestPart("file") MultipartFile file
+    ) {
         try {
-            // Kiểm tra file
-            BufferedImage bi = ImageIO.read(file.getInputStream());
-            if (bi == null) {
-                return ResponseEntity.badRequest().body("Error: Invalid image file");
+            log.info("Start uploading image for location: {}", locationId);
+            
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "File is empty"));
             }
 
-            // Upload lên Cloudinary
-            Map result = cloudinaryService.upload(file);
+            ImageLocation result = imageLocationService.uploadImageForLocation(file, locationId);
             
-            // Tạo ImageLocation
-            ImageLocation imageLocation = new ImageLocation();
-            imageLocation.setImageLink((String) result.get("url"));
-            imageLocation.setIdCloud((String) result.get("public_id"));
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", result.getId());
+            response.put("imageUrl", result.getImageLink());
+            response.put("size", result.getSize());
+            response.put("type", result.getType());
+            response.put("uploadDate", result.getDate());
             
-            // Set thời gian
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-            Instant instant = Instant.from(formatter.parse((String) result.get("created_at")));
-            imageLocation.setDate(Date.from(instant));
+            return ResponseEntity.ok(response);
             
-            // Set type và size
-            imageLocation.setType((String) result.get("format"));
-            int bytes = (int) result.get("bytes");
-            double size = (double) bytes / 1024;
-            imageLocation.setSize(String.format("%.3f KB", size));
-            
-            // Lưu và trả về kết quả
-            return ResponseEntity.ok().body(imageLocationService.save(imageLocation));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
+            log.error("Error uploading image: ", e);
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
         }
     }
 } 

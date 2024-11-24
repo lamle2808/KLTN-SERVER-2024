@@ -34,13 +34,11 @@ public class Location implements Serializable{
     private Long id;
     
     private String title;
-    private String img;
     
-    @ElementCollection
-    @CollectionTable(name = "location_images", 
-        joinColumns = @JoinColumn(name = "location_id"))
-    @Column(name = "image_url")
-    private List<String> images = new ArrayList<>();
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImageLocation> images = new ArrayList<>();
+    
+    private String img;
     
     private String address;
     private Double latitude;

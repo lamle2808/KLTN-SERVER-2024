@@ -17,6 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class SecurityConfiguration {
 
     private static final String[] AUTH_WHITELIST = {
         "/api/v1/auth/**",
+        "/api/v1/locations/*/upload-image",
         "/api/v1/locations",
         "/api/v1/locations/**",
         "/api/v1/services/**",
@@ -41,9 +44,21 @@ public class SecurityConfiguration {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/v1/locations").permitAll()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/locations/*/upload-image").permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, ex) -> {
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{ \"error\": \"Unauthorized\" }");
+                })
+                .accessDeniedHandler((request, response, ex) -> {
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("{ \"error\": \"Access Denied\" }");
+                })
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,7 +74,13 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization", 
+            "Content-Type", 
+            "X-Requested-With",
+            "Accept",           // Thêm header cho multipart
+            "Content-Length"    // Thêm header cho multipart
+        ));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(false);
         
