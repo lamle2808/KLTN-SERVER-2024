@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
@@ -58,7 +60,11 @@ public class ImageLocationServiceImpl implements ImageLocationService {
         imageLocation.setLocation(location);
         imageLocation.setImageLink((String) result.get("url"));
         imageLocation.setIdCloud((String) result.get("public_id"));
-        imageLocation.setDate(new Date());
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        Instant instant = Instant.from(formatter.parse((String) result.get("created_at")));
+        imageLocation.setDate(Date.from(instant));
+        
         imageLocation.setType((String) result.get("format"));
         
         int bytes = (int) result.get("bytes");

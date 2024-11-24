@@ -63,20 +63,14 @@ public class LocationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(
-        value = "/{locationId}/upload-image",
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<Map<String, Object>> uploadImage(
-        @PathVariable Long locationId,
-        @RequestPart("file") MultipartFile file
-    ) {
+    @PostMapping(value = "/upload-image/{locationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadLocationImage(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable Long locationId) {
         try {
-            log.info("Start uploading image for location: {}", locationId);
-            
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest()
-                    .body(Map.of("error", "File is empty"));
+                    .body(Map.of("error", "File không được để trống"));
             }
 
             ImageLocation result = imageLocationService.uploadImageForLocation(file, locationId);
@@ -91,7 +85,6 @@ public class LocationController {
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
-            log.error("Error uploading image: ", e);
             return ResponseEntity.badRequest()
                 .body(Map.of("error", e.getMessage()));
         }
