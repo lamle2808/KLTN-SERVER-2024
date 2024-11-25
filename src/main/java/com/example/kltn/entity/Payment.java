@@ -26,14 +26,15 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    private Date paymentDate;
+    private String transactionId;
     private String paymentMethod;
     private String paymentStatus;
     private double amount;
+    private Date paymentDate;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
