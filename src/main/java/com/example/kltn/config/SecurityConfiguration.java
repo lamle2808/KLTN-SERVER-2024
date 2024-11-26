@@ -41,7 +41,11 @@ public class SecurityConfiguration {
         "/api/v1/avatars/*/upload-image",
         "/v3/api-docs/**",
         "/swagger-ui/**",
-        "/swagger-ui.html"
+        "/swagger-ui.html",
+        "/api/v1/orders/**",  // Cho phép truy cập tất cả API orders
+        "/api/v1/orders",
+        "/api/v1/auth/**"
+        
     };
 
     @Bean
