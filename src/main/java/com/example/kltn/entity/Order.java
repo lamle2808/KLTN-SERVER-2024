@@ -39,8 +39,7 @@ public class Order implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate = new Date();
     private String status = "PENDING";
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private CancelRequest cancelRequest;
+
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee assignedEmployee;
