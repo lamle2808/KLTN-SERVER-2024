@@ -8,8 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,6 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name = "events")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -45,9 +42,6 @@ public class Event implements Serializable {
     private String status;
     private double depositRequired;
     private Date depositDueDate;
-    @OneToOne
-    @JoinColumn(name = "refund_policy_id")
-    private RefundPolicy refundPolicy;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
     @ManyToOne

@@ -8,4 +8,5 @@ public interface ServiceEventService {
     List<ServiceEvent> getAll();
     ServiceEvent getById(Long id);
     void deleteService(Long id);
+    List<ServiceEvent> getByName(String name);
 } 

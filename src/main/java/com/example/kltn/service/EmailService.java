@@ -26,4 +26,23 @@ public class EmailService {
         message.setFrom("LamLe@gmail.com");
         javaMailSender.send(message);
     }
+
+    public void sendPaymentSuccessEmail(String to, String transactionId, double amount) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Thanh toán thành công");
+            message.setText(String.format(
+                "Thanh toán của bạn đã được xử lý thành công.\n" +
+                "Mã giao dịch: %s\n" +
+                "Số tiền: %,.0f VNĐ\n" +
+                "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!",
+                transactionId, amount
+            ));
+            javaMailSender.send(message);
+            log.info("Đã gửi email thông báo thanh toán thành công tới: {}", to);
+        } catch (Exception e) {
+            log.error("Lỗi gửi email: " + e.getMessage(), e);
+        }
+    }
 }

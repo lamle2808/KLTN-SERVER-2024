@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.*;
+import com.example.kltn.constant.Status;
 
 @Entity
 @Table(name = "orders")
@@ -38,7 +39,7 @@ public class Order implements Serializable {
     private List<Payment> payments = new ArrayList<>();
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate = new Date();
-    private String status = "PENDING";
+    private String status = Status.ORDER_PENDING.getValue();
 
     @ManyToOne
     @JoinColumn(name = "employee_id")

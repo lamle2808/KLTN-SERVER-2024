@@ -1,6 +1,7 @@
 package com.example.kltn.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -15,14 +16,16 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Employee extends Person {
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(mappedBy = "assignedEmployee")
-    private List<Order> orders = new ArrayList<>();
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Event> events = new ArrayList<>();
+    private String name;
+    private String phoneNumber;
+    private String address;
+    private String email;
+    
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 }

@@ -6,9 +6,11 @@ import com.example.kltn.service.MomoService;
 import com.example.kltn.dto.PaymentRequest;
 import com.example.kltn.entity.Customer;
 import com.example.kltn.service.CustomerService;
+import com.example.kltn.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.kltn.constant.Status;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +25,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final MomoService momoService;
     private final CustomerService customerService;
+    private final OrderService orderService;
 
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
@@ -72,7 +75,7 @@ public class PaymentController {
             // Lưu thông tin thanh toán
             Payment payment = new Payment();
             payment.setPaymentMethod("MOMO");
-            payment.setPaymentStatus("PENDING");
+            payment.setPaymentStatus(Status.PAYMENT_PENDING.getValue());
             payment.setAmount(request.getAmount());
             payment.setPaymentDate(new Date());
             
@@ -100,11 +103,16 @@ public class PaymentController {
             String resultCode = params.get("resultCode");
             
             if ("0".equals(resultCode)) {
-                // Cập nhật trạng thái thanh toán
                 Payment payment = paymentService.getById(Long.parseLong(orderId));
                 if (payment != null) {
-                    payment.setPaymentStatus("SUCCESS");
+                    payment.setPaymentStatus(Status.PAYMENT_SUCCESS.getValue());
                     paymentService.saveOrUpdate(payment);
+                    
+                    // Cập nhật order status nếu có
+                    if (payment.getOrder() != null) {
+                        payment.getOrder().setStatus(Status.ORDER_PAID.getValue());
+                        orderService.saveOrUpdate(payment.getOrder());
+                    }
                 }
                 return ResponseEntity.ok(Map.of("message", "Thanh toán thành công"));
             }

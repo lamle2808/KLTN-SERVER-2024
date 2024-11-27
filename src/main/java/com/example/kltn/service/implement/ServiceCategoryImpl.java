@@ -46,4 +46,14 @@ public class ServiceCategoryImpl implements ServiceCategoryService {
         return serviceCategoryRepo.findServiceCategoryById(id);
     }
 
+    @Override
+    public boolean checkExistsByName(String name) {
+        return serviceCategoryRepo.existsByName(name);
+    }
+
+    @Override
+    public List<ServiceCategory> searchByKeyword(String keyword) {
+        return serviceCategoryRepo.findByNameContainingIgnoreCase(keyword);
+    }
+
 }

@@ -8,4 +8,6 @@ public interface ServiceCategoryService {
     List<ServiceCategory> getAll();
     ServiceCategory getByName(String name);
     ServiceCategory getById(Long id);
+    boolean checkExistsByName(String name);
+    List<ServiceCategory> searchByKeyword(String keyword);
 }
