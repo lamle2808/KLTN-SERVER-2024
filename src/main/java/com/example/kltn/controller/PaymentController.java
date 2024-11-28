@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -40,34 +41,21 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
-        Payment createdPayment = paymentService.saveOrUpdate(payment);
-        return ResponseEntity.ok(createdPayment);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Payment> updatePayment(@PathVariable Long id, @RequestBody Payment payment) {
-        payment.setId(id);
-        Payment updatedPayment = paymentService.saveOrUpdate(payment);
-        return ResponseEntity.ok(updatedPayment);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-        paymentService.deletePayment(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/momo/create")
-    public ResponseEntity<?> createMomoPayment(@RequestBody PaymentRequest request) {
+    public ResponseEntity<?> createPayment(@RequestBody PaymentRequest request) {
         try {
-            String orderInfo = request.getOrderInfo();
-            if (orderInfo == null) {
-                orderInfo = "Thanh toán đơn hàng " + request.getOrderId();
+            // Tạo orderId unique
+            String orderId = "TEST_ORDER_" + UUID.randomUUID().toString().substring(0, 8);
+            
+            String orderInfo;
+            if (request.getOrderInfo() == null || request.getOrderInfo().trim().isEmpty()) {
+                orderInfo = "Thanh toán đơn hàng " + orderId;
+            } else {
+                orderInfo = request.getOrderInfo();
             }
             
+            // Tạo payment URL từ MoMo
             String paymentUrl = momoService.createPayment(
-                request.getOrderId(), 
+                orderId,  // Sử dụng orderId mới tạo
                 request.getAmount().toString(), 
                 orderInfo
             );
@@ -87,13 +75,29 @@ public class PaymentController {
             
             paymentService.saveOrUpdate(payment);
             
+            // Trả về payment URL và orderId mới
             return ResponseEntity.ok(Map.of(
                 "paymentUrl", paymentUrl,
-                "orderId", request.getOrderId()
+                "orderId", orderId
             ));
+            
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Lỗi tạo thanh toán: " + e.getMessage()));
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Payment> updatePayment(@PathVariable Long id, @RequestBody Payment payment) {
+        payment.setId(id);
+        Payment updatedPayment = paymentService.saveOrUpdate(payment);
+        return ResponseEntity.ok(updatedPayment);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+        paymentService.deletePayment(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/momo/callback")

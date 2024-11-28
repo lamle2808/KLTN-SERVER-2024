@@ -45,7 +45,14 @@ public class SecurityConfiguration {
         "/api/v1/orders/**",  // Cho phép truy cập tất cả API orders
         "/api/v1/orders",
         "/api/v1/auth/**",
-        "/api/v1/event-categories/**"
+        "/api/v1/event-categories/**",
+        "/api/v1/payments/momo/callback",
+        "/api/v1/payments/momo/notify",
+        "/api/v1/payments",                    // POST để tạo payment
+        "/api/v1/payments/**",                 // Các endpoint con
+        "/api/v1/payments/momo/callback",      // Callback từ MoMo
+        "/api/v1/payments/momo/notify",        // Notify từ MoMo
+        "/KLTN-SERVER-2024/api/v1/payments/**" // Thêm context path
     };
 
     @Bean
@@ -56,6 +63,8 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/locations/*/upload-image").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/payments/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/payments/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
