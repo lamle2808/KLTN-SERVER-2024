@@ -31,4 +31,10 @@ public class VerificationToken implements Serializable{
     private Account account;
     private LocalDateTime expiryDate;
 
+    public VerificationToken(String token, Account account) {
+        this.token = token;
+        this.account = account;
+        this.expiryDate = LocalDateTime.now().plusHours(24);
+    }
+
 }

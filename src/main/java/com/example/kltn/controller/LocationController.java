@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/locations")
@@ -42,6 +43,7 @@ public class LocationController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createLocation(
             @RequestHeader("Authorization") String token,
             @RequestBody Location location) {
@@ -60,6 +62,7 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateLocation(
             @PathVariable Long id,
             @RequestBody Location location) {
@@ -81,6 +84,7 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteLocation(@PathVariable Long id) {
         try {
             locationService.deleteLocation(id);

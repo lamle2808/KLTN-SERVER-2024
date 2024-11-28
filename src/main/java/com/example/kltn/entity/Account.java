@@ -23,6 +23,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "accounts")
@@ -44,6 +45,9 @@ public class Account implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_account_roles", joinColumns = @JoinColumn(name = "account_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles = new LinkedHashSet<>();
+
+    private String resetPassWordToken;
+    private LocalDateTime resetPassWordTokenExpiry;
 
     @JsonIgnore
     @Override

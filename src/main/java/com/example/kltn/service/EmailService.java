@@ -45,4 +45,15 @@ public class EmailService {
             log.error("Lỗi gửi email: " + e.getMessage(), e);
         }
     }
+
+    public void sendPasswordResetEmail(String email, String token) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Đặt lại mật khẩu");
+        message.setText("Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn: " +
+                "http://localhost:8521/KLTN-2024/api/v1/auth/reset-password?token=" + token);
+        message.setFrom("LamLe@gmail.com");
+        javaMailSender.send(message);
+        log.info("Đã gửi email đặt lại mật khẩu tới: {}", email);
+    }
 }

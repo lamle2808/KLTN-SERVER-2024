@@ -18,10 +18,12 @@ import com.example.kltn.service.AccountService;
 import com.example.kltn.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
+@Slf4j
 public class AuthController {
     private final AccountService accountService;
     private final EmailService emailService;
@@ -68,21 +70,28 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Account account) {
         try {
+            log.info("Đang xử lý đăng nhập cho email: {}", account.getEmail());
+            
             String token = accountService.login(account);
             if (token.equals("")) {
-                return ResponseEntity.badRequest().body("incorrect email or incorrect password!!");
-            }
-            Account accountLogin = accountService.getByEmail2(account.getEmail());
-            if (accountLogin.getEnable() == 0 || accountLogin.getIsVerified() == 0) {
-                return ResponseEntity.badRequest().body("account is not active !!");
+                log.warn("Đăng nhập thất bại - email hoặc mật khẩu không chính xác: {}", account.getEmail());
+                return ResponseEntity.badRequest().body("Email hoặc mật khẩu không chính xác");
             }
             
-            // Tạo response object với thông tin cần thiết
+            Account accountLogin = accountService.getByEmail(account.getEmail()).orElseThrow();
+            if (accountLogin.getEnable() == 0 || accountLogin.getIsVerified() == 0) {
+                log.warn("Đăng nhập thất bại - tài khoản chưa được kích hoạt: {}", account.getEmail());
+                return ResponseEntity.badRequest().body("Tài khoản chưa được kích hoạt");
+            }
+            
+            log.info("Đăng nhập thành công cho email: {}", account.getEmail());
             LoginResponse loginResponse = LoginResponse.fromAccount(token, accountLogin);
             return ResponseEntity.ok().body(loginResponse);
             
         } catch (Exception exception) {
-            return ResponseEntity.badRequest().body("There is an exception when execute!! --> " + exception);
+            log.error("Lỗi đăng nhập cho email: {}", account.getEmail(), exception);
+            return ResponseEntity.badRequest()
+                .body("Có lỗi xảy ra trong quá trình đăng nhập: " + exception.getMessage());
         }
     }
 

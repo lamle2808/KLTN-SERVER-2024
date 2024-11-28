@@ -3,41 +3,32 @@ package com.example.kltn.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.kltn.dataBean.AccountChange;
-import com.example.kltn.dataBean.CustomerDataBean;
 import com.example.kltn.entity.Account;
-import com.example.kltn.entity.Customer;
 import com.example.kltn.entity.Role;
 import com.example.kltn.entity.VerificationToken;
 
 public interface AccountService {
+    List<Account> getAll();
+
+    Account register(Account account);
+
+    String login(Account account);
+
     Optional<Account> getByEmail(String email);
 
     Optional<Account> getByPhoneNumber(String phoneNumber);
 
-    Account saveOrUpdate(Account account);
-
     Account getById(Long id);
 
-    Account getByEmail2(String email);
+    boolean addRoleToAccount(Account account, Role role);
 
-    Account register(Account account);
+    boolean removeRoleFromAccount(Account account, Role role);
 
-    List<Account> getAll();
+    VerificationToken createVerificationToken(Account account);
 
-    String login(Account account);
+    boolean verifyAccount(String token);
 
-    int changePassword(AccountChange account);
+    Account saveOrUpdate(Account account);
 
-    String forgotPassword(String email);
-
-    CustomerDataBean customerLogin(String token, Customer customer);
-
-    Account removeRoleFromAccount(Account account, Role role);
-
-    Account addRoleToAccount(Account account, Role role);
-
-    public VerificationToken createVerificationToken(Account account);
-
-    public boolean verifyAccount(String token);
+    boolean forgotPassword(String email);
 }
