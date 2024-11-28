@@ -11,6 +11,8 @@ import com.example.kltn.service.ImageServiceEventService;
 import com.example.kltn.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -107,6 +110,102 @@ public class EventController {
             
             return ResponseEntity.ok().body(imageServiceEventService.save(imageService));
             
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<Event>> searchEvents(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long locationId,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "eventDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir) {
+        
+        try {
+            Page<Event> events = eventService.searchEvents(
+                categoryId, locationId, minPrice, maxPrice, keyword, 
+                page, size, sortBy, sortDir);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new PageImpl<>(Collections.emptyList()));
+        }
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<Page<Event>> getPopularEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<Event> events = eventService.getPopularEvents(page, size);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new PageImpl<>(Collections.emptyList()));
+        }
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<Page<Event>> getUpcomingEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<Event> events = eventService.getUpcomingEvents(page, size);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new PageImpl<>(Collections.emptyList()));
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+        try {
+            return ResponseEntity.ok(eventService.saveOrUpdate(event));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event event) {
+        try {
+            event.setId(id);
+            return ResponseEntity.ok(eventService.saveOrUpdate(event));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+        try {
+            eventService.deleteEvent(id);
+            return ResponseEntity.ok()
+                .body(Map.of("message", "Đã xóa sự kiện thành công"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEventById(@PathVariable Long id) {
+        try {
+            Event event = eventService.getById(id);
+            if (event == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(event);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", e.getMessage()));

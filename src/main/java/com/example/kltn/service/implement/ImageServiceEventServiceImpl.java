@@ -5,6 +5,7 @@ import com.example.kltn.repository.ImageServiceRepository;
 import com.example.kltn.service.ImageServiceEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,5 +28,11 @@ public class ImageServiceEventServiceImpl implements ImageServiceEventService {
     @Override
     public void deleteById(Long id) {
         imageServiceRepository.deleteById(id);
+    }
+    
+    @Override
+    public ImageService uploadImageForService(MultipartFile file, Long serviceEventId) {
+        // TODO: Implement file upload logic here
+        return null;
     }
 } 

@@ -33,4 +33,10 @@ public class CustomerServiceImpl implements CustomerService {
     public void deleteCustomer(Long id) {
         customerRepo.deleteById(id);
     }
+
+    @Override
+    public Customer findByEmail(String email) {
+        return customerRepo.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với email: " + email));
+    }
 } 

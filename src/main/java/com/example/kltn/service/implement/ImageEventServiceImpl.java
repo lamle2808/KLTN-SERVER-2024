@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +34,11 @@ public class ImageEventServiceImpl implements ImageEventService {
     @Override
     public List<ImageEvent> getAllByEventId(Long eventId) {
         return imageEventRepo.findByEventId(eventId);
+    }
+
+    @Override
+    public ImageEvent uploadImageForEvent(MultipartFile file, Long eventId) {
+        // TODO: Implement image upload logic
+        return null;
     }
 } 

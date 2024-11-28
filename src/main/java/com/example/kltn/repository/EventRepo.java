@@ -37,7 +37,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     // Tìm events phổ biến (dựa trên số lượng đơn đặt)
     @Query("SELECT e FROM Event e LEFT JOIN e.orders o GROUP BY e ORDER BY COUNT(o) DESC")
     Page<Event> findPopularEvents(Pageable pageable);
-    Page<Event> findByEventCategoryAndIdNot(EventCategory category, Long eventId, Pageable pageable);
+    Page<Event> findByCategoryAndIdNot(EventCategory category, Long eventId, Pageable pageable);
 
     Page<Event> findByEnventDateGreaterThanEqual(Date date, Pageable pageable);
 }
