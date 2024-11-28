@@ -44,8 +44,8 @@ public class SecurityConfiguration {
         "/swagger-ui.html",
         "/api/v1/orders/**",  // Cho phép truy cập tất cả API orders
         "/api/v1/orders",
-        "/api/v1/auth/**"
-        
+        "/api/v1/auth/**",
+        "/api/v1/event-categories/**"
     };
 
     @Bean

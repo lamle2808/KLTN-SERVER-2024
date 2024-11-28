@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginResponse {
     private String token;
+    private Long accountId;
     private String email;
     private String userName;
     private String phoneNumber;
@@ -20,6 +21,7 @@ public class LoginResponse {
     public static LoginResponse fromAccount(String token, Account account) {
         LoginResponse response = new LoginResponse();
         response.setToken(token);
+        response.setAccountId(account.getId());
         response.setEmail(account.getEmail());
         response.setUserName(account.getUsername());
         response.setPhoneNumber(account.getPhoneNumber());

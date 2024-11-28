@@ -1,10 +1,11 @@
 package com.example.kltn.service.implement;
 
 import com.example.kltn.entity.Location;
-import com.example.kltn.entity.Employee;
+import com.example.kltn.entity.Event;
 import com.example.kltn.repository.LocationRepo;
-import com.example.kltn.repository.EmployeeRepo;
+import com.example.kltn.repository.EventRepo;
 import com.example.kltn.service.LocationService;
+import com.example.kltn.service.EventService;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +21,32 @@ import java.util.List;
 public class LocationServiceImpl implements LocationService {
     
     private final LocationRepo locationRepo;
-    private final EmployeeRepo employeeRepo;
+    private final EventService eventService;
 
     @Override
-    public Location saveLocation(Location location, Long authorId) {
-        Employee author = employeeRepo.findById(authorId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với ID: " + authorId));
-        location.setAuthor(author.getAccount());
+    public Location saveOrUpdate(Location location) {
         return locationRepo.save(location);
     }
 
     @Override
     public Location getById(Long id) {
         return locationRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy địa điểm với ID: " + id));
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy location"));
+    }
+
+    @Override
+    public Location addEventToLocation(Long locationId, Event event) {
+        Location location = getById(locationId);
+        event.setEventLocation(location);
+        location.getEvents().add(event);
+        return locationRepo.save(location);
+    }
+
+    @Override
+    public Location removeEventFromLocation(Long locationId, Long eventId) {
+        Location location = getById(locationId);
+        location.getEvents().removeIf(event -> event.getId().equals(eventId));
+        return locationRepo.save(location);
     }
 
     @Override
@@ -45,14 +58,5 @@ public class LocationServiceImpl implements LocationService {
     public void deleteLocation(Long id) {
         Location location = getById(id);
         locationRepo.delete(location);
-    }
-
-    @Override
-    public Location updateLocation(Location location) {
-        // Kiểm tra xem location có tồn tại không
-        if (location.getId() == null || !locationRepo.existsById(location.getId())) {
-            throw new RuntimeException("Không tìm thấy địa điểm để cập nhật");
-        }
-        return locationRepo.save(location);
     }
 } 
