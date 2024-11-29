@@ -22,8 +22,8 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Xác minh tài khoản");
         message.setText("Vui lòng nhấp vào liên kết sau để xác minh tài khoản của bạn: " +
-                "http://localhost:8521/KLTN-2024/api/v1/auth/verify?token=" + token);
-        message.setFrom("LamLe@gmail.com");
+                "http://localhost:8521/KLTN-SERVER-2024/api/v1/auth/verify?token=" + token);
+        message.setFrom("lamle28082001@gmail.com");
         javaMailSender.send(message);
     }
 
