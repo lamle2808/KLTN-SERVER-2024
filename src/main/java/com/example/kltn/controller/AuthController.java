@@ -68,7 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Account account) {
+    public ResponseEntity<String> login(@RequestBody Account account) {
         try {
             log.info("Đang xử lý đăng nhập cho email: {}", account.getEmail());
             
@@ -86,7 +86,7 @@ public class AuthController {
             
             log.info("Đăng nhập thành công cho email: {}", account.getEmail());
             LoginResponse loginResponse = LoginResponse.fromAccount(token, accountLogin);
-            return ResponseEntity.ok().body(loginResponse);
+            return ResponseEntity.ok().body(token);
             
         } catch (Exception exception) {
             log.error("Lỗi đăng nhập cho email: {}", account.getEmail(), exception);

@@ -11,7 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.ArrayList;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/locations")
 @RequiredArgsConstructor
@@ -43,26 +48,45 @@ public class LocationController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createLocation(
-            @RequestHeader("Authorization") String token,
+            @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody Location location) {
+        if (token == null) {
+            return ResponseEntity.badRequest().body("Token không được cung cấp hoặc không hợp lệ.");
+        }
+        log.info("Received token: {}", token);
         try {
-            String email = jwtService.extractUsername(token.substring(7));
+            // Sử dụng token trực tiếp
+            String jwt = token;
+            
+            // Trích xuất email từ token
+            String email = jwtService.extractUsername(jwt);
+            
+            // Tìm tài khoản người dùng dựa trên email
             Account author = accountRepo.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
+            // Kiểm tra tính hợp lệ của token với UserDetails
+            UserDetails userDetails = new User(author.getEmail(), author.getPassword(), new ArrayList<>());
+            if (!jwtService.isTokenValid(jwt, userDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ.");
+            }
+
+            // Thiết lập tác giả cho location
             location.setAuthor(author);
+            
+            // Lưu hoặc cập nhật location
             Location savedLocation = locationService.saveOrUpdate(location);
 
             return ResponseEntity.ok(savedLocation);
         } catch (Exception e) {
+            log.error("Lỗi khi tạo location: ", e);
             return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateLocation(
             @PathVariable Long id,
             @RequestBody Location location) {
@@ -84,7 +108,7 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteLocation(@PathVariable Long id) {
         try {
             locationService.deleteLocation(id);

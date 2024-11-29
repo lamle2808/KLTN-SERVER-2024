@@ -37,16 +37,17 @@ public class SecurityConfiguration {
     private static final String[] AUTH_WHITELIST = {
         "/api/v1/auth/**",
         "/swagger-ui/**",
+        "/api/v1/locations/**",
         "/v3/api-docs/**"
     };
 
     private static final String[] WHITE_LIST_URL = {
         "/api/v1/auth/login",
         "/api/v1/auth/register",
-        "/api/v1/auth/verify-email",
-        "/api/v1/auth/forgot-password",
-        "/api/v1/auth/reset-password",
-        "/api/v1/auth/refresh-token",
+        "/api/v1/auth/verify",
+        "/api/v1/locations/**",
+        "/api/v1/authors/**",
+        "/api/v1/roles/**",
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html"
@@ -99,6 +100,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .requestMatchers(WHITE_LIST_URL).permitAll()
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
@@ -126,16 +128,8 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
-            "Content-Type", 
-            "X-Requested-With",
-            "Accept",           // Thêm header cho multipart
-            "Content-Length"    // Thêm header cho multipart
-        ));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(false);
-        
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Content-Length"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
