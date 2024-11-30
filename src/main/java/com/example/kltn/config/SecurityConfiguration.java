@@ -37,7 +37,15 @@ public class SecurityConfiguration {
     private static final String[] AUTH_WHITELIST = {
         "/api/v1/auth/**",
         "/swagger-ui/**",
+        "/api/v1/auth/login",
+        "/api/v1/auth/register",
+        "/api/v1/auth/verify",
         "/api/v1/locations/**",
+        "/api/v1/authors/**",
+        "/api/v1/roles/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
         "/v3/api-docs/**"
     };
 
@@ -89,37 +97,19 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-        HttpSecurity http, 
-        JwtAuthenticationFilter jwtAuthFilter,
-        AuthenticationProvider authenticationProvider
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(AUTH_WHITELIST).permitAll()
-                .requestMatchers(WHITE_LIST_URL).permitAll()
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint((request, response, ex) -> {
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("{ \"error\": \"Unauthorized\" }");
-                })
-                .accessDeniedHandler((request, response, ex) -> {
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write("{ \"error\": \"Access Denied\" }");
-                })
-            )
+            // .authorizeHttpRequests(auth -> auth
+            //     .requestMatchers(AUTH_WHITELIST).permitAll()
+            //     // .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+            //     // .requestMatchers(HttpMethod.POST, "/api/v1/**").permitAll()
+            //     .anyRequest().authenticated()
+            // )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 

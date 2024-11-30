@@ -49,40 +49,38 @@ public class LocationController {
 
     @PostMapping
     public ResponseEntity<?> createLocation(
-            @RequestHeader(value = "Authorization", required = false) String token,
+        //     @RequestHeader(value = "Authorization", required = false) String token,
             @RequestBody Location location) {
-        if (token == null) {
-            return ResponseEntity.badRequest().body("Token không được cung cấp hoặc không hợp lệ.");
-        }
-        log.info("Received token: {}", token);
-        try {
-            // Sử dụng token trực tiếp
-            String jwt = token;
+       
+        
+        // String jwt = token.substring(7); // Bỏ "Bearer " để lấy JWT
+        // log.info("Received token: {}", jwt);
+        // if (token == null || !token.startsWith("Bearer ")) {
+        //     return ResponseEntity.badRequest().body("Token không được cung cấp hoặc không hợp lệ.");
+        // }
+        
+        // try {
+        //     // Trích xuất email từ token
+        //     String email = jwtService.extractUsername(jwt);
             
-            // Trích xuất email từ token
-            String email = jwtService.extractUsername(jwt);
-            
-            // Tìm tài khoản người dùng dựa trên email
-            Account author = accountRepo.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+        //     // Tìm tài khoản người dùng dựa trên email
+        //     Account author = accountRepo.findByEmail(email)
+        //             .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-            // Kiểm tra tính hợp lệ của token với UserDetails
-            UserDetails userDetails = new User(author.getEmail(), author.getPassword(), new ArrayList<>());
-            if (!jwtService.isTokenValid(jwt, userDetails)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ.");
-            }
-
-            // Thiết lập tác giả cho location
-            location.setAuthor(author);
+        //     // Kiểm tra tính hợp lệ của token với UserDetails
+        //     UserDetails userDetails = new User(author.getEmail(), author.getPassword(), new ArrayList<>());
+        //     if (!jwtService.isTokenValid(jwt, userDetails)) {
+        //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ.");
+        //     }
             
-            // Lưu hoặc cập nhật location
+            // Thực hiện logic tạo Location
             Location savedLocation = locationService.saveOrUpdate(location);
-
             return ResponseEntity.ok(savedLocation);
-        } catch (Exception e) {
-            log.error("Lỗi khi tạo location: ", e);
-            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
-        }
+            
+    //     } catch (Exception e) {
+    //         log.error("Lỗi khi tạo location: ", e);
+    //         return ResponseEntity.badRequest().body("Lỗi khi tạo location: " + e.getMessage());
+    //     }
     }
 
     @PutMapping("/{id}")
@@ -96,7 +94,7 @@ public class LocationController {
                 return ResponseEntity.notFound().build();
             }
             
-            // Giữ nguyên author từ location cũ
+            // Gi��� nguyên author từ location cũ
             location.setId(id);
             location.setAuthor(existingLocation.getAuthor());
             
