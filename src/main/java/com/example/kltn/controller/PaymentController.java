@@ -7,6 +7,7 @@ import com.example.kltn.dto.PaymentRequest;
 import com.example.kltn.entity.Customer;
 import com.example.kltn.service.CustomerService;
 import com.example.kltn.service.OrderService;
+import com.example.kltn.service.VnpayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class PaymentController {
     private final MomoService momoService;
     private final CustomerService customerService;
     private final OrderService orderService;
+    private final VnpayService vnpayService;
 
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
@@ -136,5 +138,23 @@ public class PaymentController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PostMapping("/create-vnpay")
+    public ResponseEntity<?> createVnpayPayment(@RequestParam String orderId, 
+                                                @RequestParam String amount,
+                                                @RequestParam String orderInfo) {
+        try {
+            String paymentUrl = vnpayService.createPayment(orderId, amount, orderInfo);
+            return ResponseEntity.ok(paymentUrl);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi tạo thanh toán VNPAY: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/vnpay-return")
+    public ResponseEntity<?> vnpayReturn(@RequestParam Map<String, String> params) {
+        // Implement logic to handle VNPAY return
+        return ResponseEntity.ok("VNPAY return handled");
     }
 } 
